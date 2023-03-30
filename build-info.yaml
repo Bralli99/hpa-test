@@ -1,0 +1,51 @@
+# version: 2
+# pipelines:
+# - pipeline: "Master build"
+#   ref: "master"
+#   stages:
+#   - stage: 'Deploy'
+#     tasks:
+#       # - step: "Deploy application to cluster"
+#       #   action: "gcr.io/k8s-skaffold/skaffold:v2.2.0"
+#       #   entrypoint: 'bash'
+#       #   args:
+#       #   - '-c'
+#       #   - >
+#       #     gcloud container clusters get-credentials --zone=$_ZONE $_CLUSTER;
+#       #     skaffold run -f=skaffold.yaml --default-repo=gcr.io/$PROJECT_ID;
+#       - task: 'tugboat - .'
+#         steps:
+#           - action: 'gcr.io/action-containers/tugboat:2.6.1'
+#             args:
+#               - 'deploy'
+#               - 'hpa-demoapp'
+#               - '--component-id=hpa-demoapp'
+#               - '--role=hpa-demoapp'
+--- 
+version: "2" 
+beta: false 
+useBuildIdentity: false 
+timeout: 30 
+pipelines: 
+- pipeline: "Master build" 
+  ref: "master" 
+  stages: 
+  - stage: "Deployment - production"
+    tasks:
+    - task: "skaffold"
+      steps:
+      - action: "gcr.io/k8s-skaffold/skaffold:v2.2.0" 
+        args: 
+        - "-c" 
+        - "gcloud config set project gke-xpn-1; gcloud container clusters get-credentials --zone=europe-west1 europe-west1-v4s4; skaffold run -f=skaffold.yaml --default-repo=gcr.io/gke-xpn-1/hpa-masterthesis;" 
+        entrypoint: "bash" 
+  # - stage: "Deployment - production" 
+  #   tasks: 
+  #   - task: "tugboat" 
+  #     steps: 
+  #     - action: 'gcr.io/action-containers/tugboat:2.6.1'
+  #       args:
+  #       - 'deploy'
+  #       - 'hpa-demoapp'
+  #       - '--component-id=hpa-demoapp'
+  #       - '--role=hpa-demoapp'

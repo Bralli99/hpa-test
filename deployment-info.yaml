@@ -1,0 +1,6 @@
+components:
+- componentId: hpa-demoapp
+  tugboat:
+    backends:
+    - backend: kubernetes
+version: 1
